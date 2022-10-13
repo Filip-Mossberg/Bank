@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text;
+
 namespace Bank
 {
     internal class Program
@@ -19,12 +21,26 @@ namespace Bank
             accounts[3, 0] = "joakim"; accounts[3, 1] = "2532";
             accounts[4, 0] = "ulrika"; accounts[4, 1] = "2435";
 
-            runbank(accounts);
+            Loggedin(accounts, MoneyAccount);
         }
-        public static void runbank(String[,] accounts)
+        public static void Loggedin(String[,] accounts, double[][] MoneyAccount)
         {
-            Login(accounts);
-            Loggedin();
+            int userid = Login(accounts);
+            int pick = Menu();
+
+            switch (pick)
+            {
+                case 1:
+                    CheckAccounts(MoneyAccount, userid);
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    break;
+            }
+
         }
         public static int Login(String[,] accounts)
         {
@@ -61,13 +77,7 @@ namespace Bank
             }
             return userid;
         }
-        public static void Loggedin()
-        {
-            int pick = menu();
-
-
-        }
-        public static int menu()
+        public static int Menu()
         {
             Console.Clear();
             String[] menuitems = { "1. See your accounts and balance", "2. Transfer between accounts", "3. Withdraw money", "4. Log out\n" };
@@ -85,14 +95,42 @@ namespace Bank
                     else if (attempts == 2)
                     {
                         Console.WriteLine("To Many Attempts!");
+                        Environment.Exit(0);
                     }
                     else 
                     {
                         Console.WriteLine("Invalid Menu Pick!\n");
                     }
             }
-            Console.WriteLine("Test");
             return pick;
+        }
+        public static void CheckAccounts(double[][] MoneyAccount, int userid)
+        {
+            Console.Clear();
+            for (int WriteAccounts = 0; WriteAccounts < MoneyAccount[userid].Length; WriteAccounts++)
+            {
+                switch (WriteAccounts)
+                {
+
+                    case 0:
+                        StringBuilder Type1 = new StringBuilder("[1] Payroll account: ");
+                        Type1.AppendFormat("{0:C}", MoneyAccount[userid][0]);
+                        Console.WriteLine(Type1.ToString());
+                        break;
+                    case 1:
+                        StringBuilder Type2 = new StringBuilder("[2] Share account: ");
+                        Type2.AppendFormat("{0:C}", MoneyAccount[userid][1]);
+                        Console.WriteLine(Type2.ToString());
+                        break;
+                    case 2:
+                        StringBuilder Type3 = new StringBuilder("[3] Savings account: ");
+                        Type3.AppendFormat("{0:C}", MoneyAccount[userid][2]);
+                        Console.WriteLine(Type3.ToString());
+                        break;
+                }
+
+            }
+
         }
 
     }
