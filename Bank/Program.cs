@@ -1,5 +1,4 @@
 ﻿using System;
-
 namespace Bank
 {
     internal class Program
@@ -20,8 +19,12 @@ namespace Bank
             accounts[3, 0] = "joakim"; accounts[3, 1] = "2532";
             accounts[4, 0] = "ulrika"; accounts[4, 1] = "2435";
 
+            runbank(accounts);
+        }
+        public static void runbank(String[,] accounts)
+        {
             Login(accounts);
-            menu();
+            Loggedin();
         }
         public static int Login(String[,] accounts)
         {
@@ -53,15 +56,44 @@ namespace Bank
                 if (attempts == 2)
                 {
                     Console.WriteLine("To Many Attempts!");
+                    Environment.Exit(0);
                 }
             }
             return userid;
         }
-        public static void menu()
+        public static void Loggedin()
+        {
+            int pick = menu();
+
+
+        }
+        public static int menu()
         {
             Console.Clear();
             String[] menuitems = { "1. See your accounts and balance", "2. Transfer between accounts", "3. Withdraw money", "4. Log out\n" };
-            foreach (string list in menuitems) Console.WriteLine(list);
+            foreach (String list in menuitems) Console.WriteLine(list);
+            int pick = 0;
+
+            for (int attempts = 0; attempts < 3; attempts++)
+            {
+                    var menupick = Console.ReadLine();
+                    bool check = int.TryParse(menupick, out pick);
+                    if (check == true && pick < 5 && pick > 0)
+                    {
+                        attempts = 10;
+                    }
+                    else if (attempts == 2)
+                    {
+                        Console.WriteLine("To Many Attempts!");
+                    }
+                    else 
+                    {
+                        Console.WriteLine("Invalid Menu Pick!\n");
+                    }
+            }
+            Console.WriteLine("Test");
+            return pick;
         }
+
     }
 }
