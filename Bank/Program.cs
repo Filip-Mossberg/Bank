@@ -21,6 +21,7 @@ namespace Bank
             accounts[4, 0] = "ulrika"; accounts[4, 1] = "2435";
 
             Login(accounts);
+            menu();
         }
         public static int Login(String[,] accounts)
         {
@@ -30,7 +31,7 @@ namespace Bank
             for (int attempts = 0; attempts < 3; attempts++)
             {
                 Console.Write("Username:");
-                String username = Console.ReadLine();
+                String username = Console.ReadLine().ToLower();
                 Console.Write("Password:");
                 String pincode = Console.ReadLine();
 
@@ -55,6 +56,12 @@ namespace Bank
                 }
             }
             return userid;
+        }
+        public static void menu()
+        {
+            Console.Clear();
+            String[] menuitems = { "1. See your accounts and balance", "2. Transfer between accounts", "3. Withdraw money", "4. Log out\n" };
+            foreach (string list in menuitems) Console.WriteLine(list);
         }
     }
 }
