@@ -21,19 +21,24 @@ namespace Bank
             accounts[3, 0] = "joakim"; accounts[3, 1] = "2532";
             accounts[4, 0] = "ulrika"; accounts[4, 1] = "2435";
 
-            Loggedin(accounts, MoneyAccount);
+            int userid = -1;
+            Loggedin(accounts, MoneyAccount, userid);
         }
-        public static void Loggedin(String[,] accounts, double[][] MoneyAccount)
+        public static void Loggedin(String[,] accounts, double[][] MoneyAccount, int userid)
         {
-            int userid = Login(accounts);
+            while (userid < 0)
+            {
+                userid = Login(accounts);
+            }
             int pick = Menu();
 
             switch (pick)
             {
                 case 1:
-                    CheckAccounts(MoneyAccount, userid);
+                    CheckAccounts(MoneyAccount, accounts, userid);
                     break;
                 case 2:
+                    Console.WriteLine("Hello!");
                     break;
                 case 3:
                     break;
@@ -104,7 +109,7 @@ namespace Bank
             }
             return pick;
         }
-        public static void CheckAccounts(double[][] MoneyAccount, int userid)
+        public static void CheckAccounts(double[][] MoneyAccount, String[,] accounts, int userid)
         {
             Console.Clear();
             for (int WriteAccounts = 0; WriteAccounts < MoneyAccount[userid].Length; WriteAccounts++)
@@ -130,7 +135,13 @@ namespace Bank
                 }
 
             }
-
+            Return(accounts, MoneyAccount, userid);
+        }
+        public static void Return(String[,] accounts, double[][] MoneyAccount, int userid)
+        {
+            Console.WriteLine("\nPress Any Button To Return To The Menu");
+            Console.ReadLine();
+            Loggedin(accounts, MoneyAccount, userid);
         }
 
     }
