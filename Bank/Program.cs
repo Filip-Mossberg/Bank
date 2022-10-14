@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Transactions;
 
 namespace Bank
 {
@@ -26,7 +27,7 @@ namespace Bank
         }
         public static void Loggedin(String[,] accounts, double[][] MoneyAccount, int userid)
         {
-            while (userid < 0)
+            if (userid < 0)
             {
                 userid = Login(accounts);
             }
@@ -36,11 +37,13 @@ namespace Bank
             {
                 case 1:
                     CheckAccounts(MoneyAccount, accounts, userid);
+                    Return(accounts, MoneyAccount, userid);
                     break;
                 case 2:
-                    Console.WriteLine("Hello!");
+                    Transfer(accounts, MoneyAccount, userid);
                     break;
                 case 3:
+                    Console.WriteLine("Hello");
                     break;
                 case 4:
                     break;
@@ -133,9 +136,7 @@ namespace Bank
                         Console.WriteLine(Type3.ToString());
                         break;
                 }
-
             }
-            Return(accounts, MoneyAccount, userid);
         }
         public static void Return(String[,] accounts, double[][] MoneyAccount, int userid)
         {
@@ -143,6 +144,129 @@ namespace Bank
             Console.ReadLine();
             Loggedin(accounts, MoneyAccount, userid);
         }
+        public static void Transfer(String[,] accounts, double[][] MoneyAccount, int userid)
+        {
+            CheckAccounts(MoneyAccount, accounts, userid);
+            (int From, int To) = FromTo(accounts, MoneyAccount, userid);
+            double amount = Amount(MoneyAccount, userid, From);
+            Message(amount, To);
+            PinCode(accounts, userid);
+        }
+        public static (int,int) FromTo(String[,] accounts, double[][] MoneyAccount, int userid)
+        {
+            int From = 0;
+            int To = 0;
 
+            for (int FromToAmount = 0; FromToAmount < 2; FromToAmount++)
+            {
+                for (int attempts = 0; attempts < 3; attempts++)
+                {
+                    String[] Type = { "\nTransfer From:", "\nTransfer To:" };
+                    Console.Write(Type[FromToAmount]);
+                    var FromTo = Console.ReadLine();
+                    bool check = int.TryParse(FromTo, out int pick);
+
+                    if (check == true && pick <= MoneyAccount[userid].Length && pick > 0)
+                    {
+                        switch (FromToAmount)
+                        {
+                            case 0:
+                                From = pick;
+                                attempts = 10;
+                                break;
+                            case 1:
+                                if (pick != From)
+                                {
+                                    To = pick;
+                                    attempts = 10;
+                                }
+                                else
+                                {
+                                    if (attempts == 2)
+                                    {
+                                        Console.WriteLine("To Many Attempts!");
+                                        Environment.Exit(0);
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Invalid Account Pick!");
+                                    }
+                                }
+                                break;
+                        }
+                    }
+                    else if (attempts == 2)
+                    {
+                        Console.WriteLine("To Many Attempts!");
+                        Environment.Exit(0);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid Account Pick!");
+                    }
+                }
+            }
+            return (From, To);
+        }
+        public static double Amount(double[][] MoneyAccount, int userid, int From)
+        {
+            double Amount = 0;
+
+            for (int attempts = 0; attempts < 3; attempts++)
+            {
+                Console.Write("\nAmount:");
+                var AmmountPick = Console.ReadLine();
+                bool check = double.TryParse(AmmountPick, out Amount);
+                if (check == true && Amount < MoneyAccount[userid][From - 1] && Amount > 0)
+                {
+                    Math.Round((Amount), 2);
+                    attempts = 10;
+                }
+                else if (attempts == 2)
+                {
+                    Console.WriteLine("To Many Attempts!");
+                    Environment.Exit(0);
+                }
+                else
+                {
+                    Console.WriteLine("Invalid Amount!");
+                }
+            }
+            return Amount;
+        }
+        public static void Message(double Amount, int To)
+        {
+            Console.Clear();
+            StringBuilder user0 = new StringBuilder("You Will Transfer ");
+            user0.AppendFormat("{0:C}", Amount);
+            user0.AppendFormat(" To Account {0}", To);
+            Console.WriteLine(user0.ToString());
+        }
+        public static void PinCode(String[,] accounts, int userid)
+        {
+            for (int attempts = 0; attempts < 3; attempts++)
+            {
+                Console.WriteLine("Confirm By Entering Your Pin-Code:");
+                var PinCode = Console.ReadLine();
+                bool check = int.TryParse(PinCode, out int Pin);
+                if (check == true && Pin == int.Parse(accounts[userid, 1]))
+                {
+                    attempts = 10;
+                }
+                else if (attempts == 2)
+                {
+                    Console.WriteLine("To Many Attempts!");
+                    Environment.Exit(0);
+                }
+                else
+                {
+                    Console.WriteLine("Invalid Amount!");
+                }
+            }
+        }
+        public static void UpdateValues()
+        {
+
+        }
     }
 }
