@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using System.Transactions;
 
 namespace Bank
 {
@@ -23,15 +22,15 @@ namespace Bank
             accounts[4, 0] = "ulrika"; accounts[4, 1] = "2435";
 
             int userid = -1;
-            Loggedin(accounts, MoneyAccount, userid);
+            program(accounts, MoneyAccount, userid);
         }
-        public static void Loggedin(String[,] accounts, double[][] MoneyAccount, int userid)
+        public static void program(String[,] accounts, double[][] MoneyAccount, int userid)
         {
             if (userid < 0)
             {
                 userid = Login(accounts);
             }
-            int pick = Menu();
+            int pick = Menu(accounts, userid);
 
             switch (pick)
             {
@@ -40,15 +39,20 @@ namespace Bank
                     Return(accounts, MoneyAccount, userid);
                     break;
                 case 2:
-                    Transfer(accounts, MoneyAccount, userid);
+                    TransferAndWithdraw(accounts, MoneyAccount, userid, 1);
+                    CheckAccounts(MoneyAccount, accounts, userid);
+                    Return(accounts, MoneyAccount, userid);
                     break;
                 case 3:
-                    Console.WriteLine("Hello");
+                    TransferAndWithdraw(accounts, MoneyAccount, userid, 2);
+                    CheckAccounts(MoneyAccount, accounts, userid);
+                    Return(accounts, MoneyAccount, userid);
                     break;
                 case 4:
+                    Console.Clear();
+                    program(accounts, MoneyAccount, -1);
                     break;
             }
-
         }
         public static int Login(String[,] accounts)
         {
@@ -85,10 +89,11 @@ namespace Bank
             }
             return userid;
         }
-        public static int Menu()
+        public static int Menu(String[,] accounts, int userid)
         {
             Console.Clear();
             String[] menuitems = { "1. See your accounts and balance", "2. Transfer between accounts", "3. Withdraw money", "4. Log out\n" };
+            Console.WriteLine("Welcome {0}!\n", accounts[userid, 0]);
             foreach (String list in menuitems) Console.WriteLine(list);
             int pick = 0;
 
@@ -107,7 +112,7 @@ namespace Bank
                     }
                     else 
                     {
-                        Console.WriteLine("Invalid Menu Pick!\n");
+                        Console.WriteLine("Invalid Menu Pick!\n", attempts);
                     }
             }
             return pick;
@@ -142,17 +147,19 @@ namespace Bank
         {
             Console.WriteLine("\nPress Any Button To Return To The Menu");
             Console.ReadLine();
-            Loggedin(accounts, MoneyAccount, userid);
+            program(accounts, MoneyAccount, userid);
         }
-        public static void Transfer(String[,] accounts, double[][] MoneyAccount, int userid)
+        public static void TransferAndWithdraw(String[,] accounts, double[][] MoneyAccount, int userid, int Decider)
         {
             CheckAccounts(MoneyAccount, accounts, userid);
-            (int From, int To) = FromTo(accounts, MoneyAccount, userid);
+            (int From, int To) = FromTo(accounts, MoneyAccount, userid, Decider);
             double amount = Amount(MoneyAccount, userid, From);
-            Message(amount, To);
+            Message(amount, To, From, Decider);
             PinCode(accounts, userid);
+            String[] Save = { From.ToString(), To.ToString(), amount.ToString(), userid.ToString() };
+            UpdateValues(MoneyAccount, Save, Decider);
         }
-        public static (int,int) FromTo(String[,] accounts, double[][] MoneyAccount, int userid)
+        public static (int,int) FromTo(String[,] accounts, double[][] MoneyAccount, int userid, int Decider)
         {
             int From = 0;
             int To = 0;
@@ -173,6 +180,10 @@ namespace Bank
                             case 0:
                                 From = pick;
                                 attempts = 10;
+                                if (Decider == 2)
+                                {
+                                    FromToAmount = 10;
+                                }
                                 break;
                             case 1:
                                 if (pick != From)
@@ -189,7 +200,7 @@ namespace Bank
                                     }
                                     else
                                     {
-                                        Console.WriteLine("Invalid Account Pick!");
+                                        Console.WriteLine("Invalid Account Pick!", attempts);
                                     }
                                 }
                                 break;
@@ -202,7 +213,7 @@ namespace Bank
                     }
                     else
                     {
-                        Console.WriteLine("Invalid Account Pick!");
+                        Console.WriteLine("Invalid Account Pick!", attempts);
                     }
                 }
             }
@@ -229,18 +240,28 @@ namespace Bank
                 }
                 else
                 {
-                    Console.WriteLine("Invalid Amount!");
+                    Console.WriteLine("Invalid Amount!", attempts);
                 }
             }
             return Amount;
         }
-        public static void Message(double Amount, int To)
+        public static void Message(double Amount, int To, int From, int Decider)
         {
             Console.Clear();
-            StringBuilder user0 = new StringBuilder("You Will Transfer ");
-            user0.AppendFormat("{0:C}", Amount);
-            user0.AppendFormat(" To Account {0}", To);
-            Console.WriteLine(user0.ToString());
+            if (Decider == 1)
+            {
+                StringBuilder TransferMessage = new StringBuilder("You Will Transfer ");
+                TransferMessage.AppendFormat("{0:C}", Amount);
+                TransferMessage.AppendFormat(" To Account {0}", To);
+                Console.WriteLine(TransferMessage.ToString());
+            }
+            else
+            {
+                StringBuilder WithdrawMessage = new StringBuilder("You Will Withdraw ");
+                WithdrawMessage.AppendFormat("{0:C}", Amount);
+                WithdrawMessage.AppendFormat(" From Account {0}", From);
+                Console.WriteLine(WithdrawMessage.ToString());
+            }
         }
         public static void PinCode(String[,] accounts, int userid)
         {
@@ -260,13 +281,27 @@ namespace Bank
                 }
                 else
                 {
-                    Console.WriteLine("Invalid Amount!");
+                    Console.WriteLine("Invalid Pin-Code!", attempts);
                 }
             }
         }
-        public static void UpdateValues()
+        public static void UpdateValues(double[][] MoneyAccount, string[] save, int Decider)
         {
+            int From = int.Parse(save[0]);
+            double Amount = double.Parse(save[2]);
+            int userid = int.Parse(save[3]);
 
+            if (Decider == 1)
+            {
+                int To = int.Parse(save[1]);
+                MoneyAccount[userid][From - 1] = MoneyAccount[userid][From - 1] - Amount;
+                MoneyAccount[userid][To - 1] = MoneyAccount[userid][To - 1] + Amount;
+            }
+            else
+            {
+                MoneyAccount[userid][From - 1] = MoneyAccount[userid][From - 1] - Amount;
+                Console.WriteLine(MoneyAccount[From - 1]);
+            }
         }
     }
 }
