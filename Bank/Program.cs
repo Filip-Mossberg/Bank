@@ -7,6 +7,7 @@ namespace Bank
     {
         static void Main(string[] args)
         {
+            // Jagged Array with all the money accounts 
             double[][] MoneyAccount = new double[5][];
             MoneyAccount[0] = new double[3] { 403.25, 23400.83, 102420.63 };
             MoneyAccount[1] = new double[2] { 1394.34, 43742.04 };
@@ -14,6 +15,7 @@ namespace Bank
             MoneyAccount[3] = new double[3] { 1904.78, 18304.94, 74323.20 };
             MoneyAccount[4] = new double[2] { 1452.86, 173744.14 };
 
+            // 2d Array with all the ser accounts
             String[,] accounts = new string[5, 2];
             accounts[0, 0] = "filip"; accounts[0, 1] = "2124";
             accounts[1, 0] = "noah"; accounts[1, 1] = "4452";
@@ -21,21 +23,21 @@ namespace Bank
             accounts[3, 0] = "joakim"; accounts[3, 1] = "2532";
             accounts[4, 0] = "ulrika"; accounts[4, 1] = "2435";
 
-            int userid = -1;
-            program(accounts, MoneyAccount, userid);
+            int userid = -1; // A id that is used to know who the user is 
+            program(accounts, MoneyAccount, userid); 
         }
-        public static void program(String[,] accounts, double[][] MoneyAccount, int userid)
+        public static void program(String[,] accounts, double[][] MoneyAccount, int userid) // Program Method that runts the program
         {
             if (userid < 0)
             {
-                userid = Login(accounts);
+                userid = Login(accounts); 
             }
-            int pick = Menu(accounts, userid);
+            int pick = Menu(accounts, userid); 
 
-            switch (pick)
+            switch (pick) // Switch that takes the input from the menu and does whatever the user decides
             {
                 case 1:
-                    CheckAccounts(MoneyAccount, accounts, userid);
+                    CheckAccounts(MoneyAccount, accounts, userid); 
                     Return(accounts, MoneyAccount, userid);
                     break;
                 case 2:
@@ -54,7 +56,7 @@ namespace Bank
                     break;
             }
         }
-        public static int Login(String[,] accounts)
+        public static int Login(String[,] accounts) // User Login Method that checks the user input againt the accounts array if there is a match
         {
             int userid = 0;
             Console.WriteLine("Welcome To The Bank!\n");
@@ -81,7 +83,7 @@ namespace Bank
                         Console.WriteLine("Wrong Username Or Pin-Code!\n");
                     }
                 }
-                if (attempts == 2)
+                if (attempts == 2) // If the attempts = 3 then the user is thrown out
                 {
                     Console.WriteLine("To Many Attempts!");
                     Environment.Exit(0);
@@ -89,7 +91,7 @@ namespace Bank
             }
             return userid;
         }
-        public static int Menu(String[,] accounts, int userid)
+        public static int Menu(String[,] accounts, int userid) // Lists the menu list and lets the user pick a option from the menu
         {
             Console.Clear();
             String[] menuitems = { "1. See your accounts and balance", "2. Transfer between accounts", "3. Withdraw money", "4. Log out\n" };
@@ -117,10 +119,10 @@ namespace Bank
             }
             return pick;
         }
-        public static void CheckAccounts(double[][] MoneyAccount, String[,] accounts, int userid)
+        public static void CheckAccounts(double[][] MoneyAccount, String[,] accounts, int userid) // Writes out the amount of accounts the user has with the correct currencys 
         {
             Console.Clear();
-            for (int WriteAccounts = 0; WriteAccounts < MoneyAccount[userid].Length; WriteAccounts++)
+            for (int WriteAccounts = 0; WriteAccounts < MoneyAccount[userid].Length; WriteAccounts++) // MoneyAccount[userid].Length is used to check how many accounts the user have
             {
                 switch (WriteAccounts)
                 {
@@ -143,23 +145,23 @@ namespace Bank
                 }
             }
         }
-        public static void Return(String[,] accounts, double[][] MoneyAccount, int userid)
+        public static void Return(String[,] accounts, double[][] MoneyAccount, int userid) // Returns the user back to the program method
         {
             Console.WriteLine("\nPress Any Button To Return To The Menu");
             Console.ReadLine();
             program(accounts, MoneyAccount, userid);
         }
-        public static void TransferAndWithdraw(String[,] accounts, double[][] MoneyAccount, int userid, int Decider)
+        public static void TransferAndWithdraw(String[,] accounts, double[][] MoneyAccount, int userid, int Decider) // List of methods that together does the Transfer and Withdraw functions
         {
             CheckAccounts(MoneyAccount, accounts, userid);
             (int From, int To) = FromTo(accounts, MoneyAccount, userid, Decider);
             double amount = Amount(MoneyAccount, userid, From);
             Message(amount, To, From, Decider);
             PinCode(accounts, userid);
-            String[] Save = { From.ToString(), To.ToString(), amount.ToString(), userid.ToString() };
-            UpdateValues(MoneyAccount, Save, Decider);
+            String[] Save = { From.ToString(), To.ToString(), amount.ToString(), userid.ToString() }; // String array that saves important values so that its easier to send to the next method
+            UpdateValues(MoneyAccount, Save, Decider); 
         }
-        public static (int,int) FromTo(String[,] accounts, double[][] MoneyAccount, int userid, int Decider)
+        public static (int,int) FromTo(String[,] accounts, double[][] MoneyAccount, int userid, int Decider) // Takes the user input from account and to account
         {
             int From = 0;
             int To = 0;
@@ -180,7 +182,7 @@ namespace Bank
                             case 0:
                                 From = pick;
                                 attempts = 10;
-                                if (Decider == 2)
+                                if (Decider == 2) // Decider is used to check if the user want to Transfer money or Withdraw money
                                 {
                                     FromToAmount = 10;
                                 }
@@ -219,7 +221,7 @@ namespace Bank
             }
             return (From, To);
         }
-        public static double Amount(double[][] MoneyAccount, int userid, int From)
+        public static double Amount(double[][] MoneyAccount, int userid, int From) // Takes the user input amount to see what amout is getting Transfered or Withdrawn
         {
             double Amount = 0;
 
@@ -245,7 +247,7 @@ namespace Bank
             }
             return Amount;
         }
-        public static void Message(double Amount, int To, int From, int Decider)
+        public static void Message(double Amount, int To, int From, int Decider) // Messages that says what is about to happen based on the users erlier inputs
         {
             Console.Clear();
             if (Decider == 1)
@@ -263,7 +265,7 @@ namespace Bank
                 Console.WriteLine(WithdrawMessage.ToString());
             }
         }
-        public static void PinCode(String[,] accounts, int userid)
+        public static void PinCode(String[,] accounts, int userid) // Method that checks if the user Pin-Code is correct before making the Transfer or Withdrawn action
         {
             for (int attempts = 0; attempts < 3; attempts++)
             {
@@ -285,7 +287,7 @@ namespace Bank
                 }
             }
         }
-        public static void UpdateValues(double[][] MoneyAccount, string[] save, int Decider)
+        public static void UpdateValues(double[][] MoneyAccount, string[] save, int Decider) // Updates the values 
         {
             int From = int.Parse(save[0]);
             double Amount = double.Parse(save[2]);
