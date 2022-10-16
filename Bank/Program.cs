@@ -23,7 +23,7 @@ namespace Bank
             accounts[3, 0] = "joakim"; accounts[3, 1] = "2532";
             accounts[4, 0] = "ulrika"; accounts[4, 1] = "2435";
 
-            int userid = -1; // A id that is used to know who the user is 
+            int userid = -1; // A variable that is used to know who the user is 
             program(accounts, MoneyAccount, userid); 
         }
         public static void program(String[,] accounts, double[][] MoneyAccount, int userid) // Program Method that runts the program
@@ -65,7 +65,7 @@ namespace Bank
             {
                 Console.Write("Username:");
                 String username = Console.ReadLine().ToLower();
-                Console.Write("Password:");
+                Console.Write("Pin-Code:");
                 String pincode = Console.ReadLine();
 
                 for (int finduser = 0; finduser < 5; finduser++)
