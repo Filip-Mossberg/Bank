@@ -170,8 +170,15 @@ namespace Bank
             {
                 for (int attempts = 0; attempts < 3; attempts++)
                 {
-                    String[] Type = { "\nTransfer From:", "\nTransfer To:" };
-                    Console.Write(Type[FromToAmount]);
+                    if (Decider == 1)
+                    {
+                        String[] Type = { "\nTransfer From:", "\nTransfer To:" };
+                        Console.Write(Type[FromToAmount]);
+                    }
+                    else
+                    {
+                        Console.Write("\nWithdraw From:");
+                    }
                     var FromTo = Console.ReadLine();
                     bool check = int.TryParse(FromTo, out int pick);
 
